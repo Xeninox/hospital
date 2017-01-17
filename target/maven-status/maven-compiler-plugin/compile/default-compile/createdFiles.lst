@@ -1,0 +1,8 @@
+hospital\domain\JSONResponse.class
+hospital\domain\PasswordEncoder.class
+hospital\repository\UserRepository.class
+hospital\domain\User.class
+hospital\controller\APIController.class
+hospital\Application.class
+hospital\service\Authenticate.class
+hospital\service\UserService.class
