@@ -25,10 +25,14 @@ public class UserService {
     @Autowired
     private UserRepository userRepo;
 
-    public JSONResponse createUser(String email, String firstname, String lastname, String password, String role) {
+    @Autowired
+    private Authenticate auth;
+
+    public JSONResponse createUser(String managerEmail, String managerPassword, String email, String firstname, String lastname, String password, String role) {
         JSONResponse jResponse = new JSONResponse();
+        User u = auth.authenticate(managerEmail, managerPassword);
         User user = userRepo.findByEmail(email);
-        if (user == null) {
+        if (user == null && u != null && u.getRole().equalsIgnoreCase("manager")) {
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setFirstname(firstname);
@@ -53,10 +57,58 @@ public class UserService {
         } else {
             jResponse.setResult(null);
             jResponse.setStatus(false);
-            jResponse.setMessage("This email already exists");
-
+            if (u == null || !u.getRole().equalsIgnoreCase("manager")) {
+                jResponse.setMessage("You do not have the permissions to create an account");
+            } else {
+                jResponse.setMessage("This email already exists");
+            }
             return jResponse;
         }
     }
 
+    public JSONResponse deleteUser(String managerEmail, String managerPassword, String deleteEmail) {
+        JSONResponse jRes = new JSONResponse();
+        User u = auth.authenticate(managerEmail, managerPassword);
+        User user = userRepo.findByEmail(deleteEmail);
+        if (user != null && u != null && u.getRole().equalsIgnoreCase("manager")) {
+            userRepo.delete(user);
+            jRes.setMessage("User deleted");
+            jRes.setResult(null);
+            jRes.setStatus(true);
+            return jRes;
+        } else {
+            jRes.setMessage("This user does not exist");
+            jRes.setResult(null);
+            jRes.setStatus(false);
+            return jRes;
+        }
+    }
+
+    public JSONResponse getUserByEmail(String email, String password) {
+        JSONResponse jRes = new JSONResponse();
+        User u = auth.authenticate(email, password);
+        if (!email.isEmpty() && u != null) {
+            User user = userRepo.findByEmail(email);
+            if (user != null) {
+                User newUser = new User();
+                newUser.setUserId(user.getUserId());
+                newUser.setEmail(email);
+                newUser.setFirstname(user.getFirstname());
+                newUser.setLastname(user.getLastname());
+                jRes.setMessage("User found");
+                jRes.setResult(newUser);
+                jRes.setStatus(true);
+            } else {
+                jRes.setMessage("User not found");
+                jRes.setResult(null);
+                jRes.setStatus(false);
+            }
+            return jRes;
+        } else {
+            jRes.setMessage("The email of the user cannot be empty");
+            jRes.setResult(null);
+            jRes.setStatus(false);
+            return jRes;
+        }
+    }
 }
