@@ -5,4 +5,5 @@ hospital\domain\User.class
 hospital\controller\APIController.class
 hospital\Application.class
 hospital\service\Authenticate.class
+hospital\controller\UserAPIResponse.class
 hospital\service\UserService.class
