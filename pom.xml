@@ -19,7 +19,7 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tomcat.version>7.0.62</tomcat.version>
-        <start-class>com.dreamoval.gengine.Application</start-class>
+        <start-class>hospital.Application</start-class>
     </properties>
  
     <dependencies>
