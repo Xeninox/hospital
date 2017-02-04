@@ -28,7 +28,8 @@ public class UserService {
     @Autowired
     private Authenticate auth;
 
-    public JSONResponse createUser(String managerEmail, String managerPassword, String email, String firstname, String lastname, String password, String role) {
+    public JSONResponse createUser(String managerEmail, String managerPassword,
+            String email, String firstname, String lastname, String password, String role) {
         JSONResponse jResponse = new JSONResponse();
         User u = auth.authenticate(managerEmail, managerPassword);
         User user = userRepo.findByEmail(email);
@@ -65,6 +66,7 @@ public class UserService {
             return jResponse;
         }
     }
+    
 
     public JSONResponse deleteUser(String managerEmail, String managerPassword, String deleteEmail) {
         JSONResponse jRes = new JSONResponse();

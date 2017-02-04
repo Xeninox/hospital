@@ -2,13 +2,17 @@ package hospital.controller;
 
 import hospital.domain.JSONResponse;
 import hospital.service.Authenticate;
+import hospital.service.PatientService;
 import hospital.service.UserService;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class APIController {
@@ -19,10 +23,8 @@ public class APIController {
     @Autowired
     private Authenticate auth;
 
-    @RequestMapping("/")
-    public String index() {
-        return "Greetings from Spring Boot!";
-    }
+    @Autowired
+    private PatientService patientServ;
 
     @RequestMapping(value = "/createUser/{managerEmail}/{managerPassword}/{email}/{firstName}/{lastName}/"
             + "{password}/{role}", method = RequestMethod.GET)
@@ -61,6 +63,55 @@ public class APIController {
             @PathVariable String username,
             @PathVariable String password) {
         return auth.auth(username, password);
+    }
+
+    @RequestMapping(value = "/setPatient",
+            method = RequestMethod.POST)
+    @ResponseBody
+    JSONResponse setPatient(
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam String firstName,
+            @RequestParam String middleName,
+            @RequestParam String lastName,
+            @RequestParam String address,
+            @RequestParam String dateOfBirth,
+            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
+        return patientServ.createPatient(email, password, firstName, middleName, lastName, address, dateOfBirth, image);
+    }
+
+    @RequestMapping(value = "/updatePatient",
+            method = RequestMethod.POST)
+    @ResponseBody
+    JSONResponse updatepatient(
+            @RequestParam String patientid,
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam String firstName,
+            @RequestParam String middleName,
+            @RequestParam String lastName,
+            @RequestParam String address,
+            @RequestParam String dateOfBirth,
+            @RequestParam(value = "image", required = false) MultipartFile image) throws IOException {
+        return patientServ.updatePatient(patientid, email, password, firstName, middleName, lastName, address, dateOfBirth, image);
+    }
+
+    @RequestMapping(value = "/deletePatient/{email}/{password}/{patientId}", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONResponse deletePatient(
+            @PathVariable String email,
+            @PathVariable String password,
+            @PathVariable String patientId) {
+        return patientServ.deletePatient(email, password, patientId);
+    }
+
+    @RequestMapping(value = "/getPatientById/{email}/{password}/{patientId}", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONResponse getPatientById(
+            @PathVariable String email,
+            @PathVariable String password,
+            @PathVariable String patientId) {
+        return patientServ.getPatientById(email, password, patientId);
     }
 
 }
